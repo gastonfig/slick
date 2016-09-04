@@ -493,8 +493,9 @@
 
             _.$dots = dot.appendTo(_.options.appendDots);
 
-            _.$dots.find('li').first().addClass('slick-active').attr('aria-hidden', 'false');
-
+            _.$dots.find('li').first()
+                .addClass('slick-active')
+                .attr('aria-selected', 'false');
         }
 
     };
@@ -1278,7 +1279,7 @@
         var _ = this;
         _.$slides.add(_.$slideTrack.find('.slick-cloned')).attr({
             'aria-hidden': 'true',
-            'tabindex': '-1'
+            'tabindex': '-1'            
         }).find('a, input, button, select').attr({
             'tabindex': '-1'
         });
@@ -1286,28 +1287,32 @@
         _.$slideTrack.attr('role', 'listbox');
 
         _.$slides.not(_.$slideTrack.find('.slick-cloned')).each(function(i) {
-            $(this).attr('role', 'option');
+            $(this).attr({
+                'role': 'tabpanel',
+                'id': 'slick-slide-tab-panel' + _.instanceUid + i + ''
+            });
             
             //Evenly distribute aria-describedby tags through available dots.
             var describedBySlideId = _.options.centerMode ? i : Math.floor(i / _.options.slidesToShow);
             
             if (_.options.dots === true) {
-                $(this).attr('aria-describedby', 'slick-slide' + _.instanceUid + describedBySlideId + '');
+                $(this).attr('aria-labelledby', 'slick-slide' + _.instanceUid + describedBySlideId + '');
             }
         });
 
         if (_.$dots !== null) {
-            _.$dots.attr('role', 'tablist').find('li').each(function(i) {
+            _.$dots.attr({
+                'role': 'tablist',
+                'aria-orientation': 'horizontal'
+            }).find('li').each(function(i) {
                 $(this).attr({
-                    'role': 'presentation',
-                    'aria-selected': 'false',
-                    'aria-controls': 'navigation' + _.instanceUid + i + '',
+                    'role': 'tab',
+                    'aria-controls': 'slick-slide-tab-panel' + _.instanceUid + i + '',
                     'id': 'slick-slide' + _.instanceUid + i + ''
                 });
             })
-                .first().attr('aria-selected', 'true').end()
                 .find('button').attr('role', 'button').end()
-                .closest('div').attr('role', 'toolbar');
+                .closest('div').attr('role', 'region');
         }
         _.activateADA();
 
@@ -2844,13 +2849,13 @@
             _.$dots
                 .find('li')
                 .removeClass('slick-active')
-                .attr('aria-hidden', 'true');
+                .attr('aria-selected', 'false');
 
             _.$dots
                 .find('li')
                 .eq(Math.floor(_.currentSlide / _.options.slidesToScroll))
                 .addClass('slick-active')
-                .attr('aria-hidden', 'false');
+                .attr('aria-selected', 'true');
 
         }
 
