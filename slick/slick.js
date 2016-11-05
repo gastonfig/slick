@@ -1278,8 +1278,7 @@
 
     Slick.prototype.initADA = function() {
         var _ = this;
-        _.$slides.add(_.$slideTrack.find('.slick-cloned')).attr({
-            'aria-hidden': 'true',
+        _.$slides.add(_.$slideTrack.find('.slick-cloned')).attr({            
             'tabindex': '-1'            
         }).find('a, input, button, select').attr({
             'tabindex': '-1'
@@ -1309,7 +1308,8 @@
                 $(this).attr({
                     'role': 'tab',
                     'aria-controls': 'slick-slide-tab-panel' + _.instanceUid + i + '',
-                    'id': 'slick-slide' + _.instanceUid + i + ''
+                    'id': 'slick-slide' + _.instanceUid + i + '',
+                    'tabindex': '0'
                 });
             })
                 .find('button').attr('role', 'button').end()
@@ -1343,9 +1343,25 @@
         var _ = this;
 
         if (_.options.dots === true && _.slideCount > _.options.slidesToShow) {
-            $('li', _.$dots).on('click.slick', {
-                message: 'index'
-            }, _.changeSlide);
+            $('li', _.$dots)
+
+                .on('click.slick', {
+                    message: 'index'
+                }, _.changeSlide)
+
+                .on('keydown.slick', function(e) {
+                    var slideIndex = $(this).index();
+
+                    if(e.keyCode === 13 || e.keyCode === 32) {
+
+                        _.changeSlide({
+                            data: {
+                                message: 'index',
+                                index: slideIndex
+                            }
+                        });
+                    }
+                });
         }
 
         if ( _.options.dots === true && _.options.pauseOnDotsHover === true ) {
@@ -2195,6 +2211,7 @@
 
         _.$slides
             .eq(index)
+            .attr('aria-hidden', 'false')
             .addClass('slick-current');
 
         if (_.options.centerMode === true) {
